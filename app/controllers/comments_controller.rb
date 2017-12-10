@@ -8,33 +8,30 @@ def create
   @comment = @job.comments.create(params[:comment].permit(:name, :body))
 	#@comment = @job.comments.build(params[:name])
  # @comment = @job.comments.build(params[:body])
-  if @comment.save
-  flash[:notice] = "Comentario criado com sucesso!"
-  else
-  flash[:alert] = "Falha na criação do comentario!"
-end
 
- #   puts " ***********************create comments"
-
-	#@comment = Comment.new(comment_params)
-	# respond_to do |format|
-   #   if @comment.save
-    #    format.html { redirect_to @comment, notice: 'Comment was successfully created.' }
-     #   format.json { render :show, status: :created, location: @comment }
-      #else
-       # format.html { render :new }
-        #format.json { render json: @commet.errors, status: :unprocessable_entity }
-      #end
-    #end
-  #end
-
+ if success = @comment.save
+    CompanyMailer.new_comment(@job, @comment).deliver
+ end
+  respond_to do |format|
+    format.html do
+        if success
+        flash[:notice] = "Comentario criado com sucesso!"
+        else
+        flash[:alert] = "Falha na criação do comentario!"
+        end
 	redirect_to @job
+      end
+    format.js
+    end
+  end
+
+
   def comment_params
        params.require(:comment).permit(:id, :name, :body)
  
 end
 
-end
+
 def destroy
   @comment = Comment.find(params[:id])
   @comment.destroy

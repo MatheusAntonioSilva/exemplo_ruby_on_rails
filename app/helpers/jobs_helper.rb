@@ -1,11 +1,18 @@
 module JobsHelper
-	def job_title(job)
-		title = h(job.title)
+  def job_title(job)
+     def job_title(job) 
+     	
+     if job.company 
+     	title = raw("#{h(job.title)} - #{h(job.company.name)}") 
 
-		if job.premium
-			title + content_tag(:strong, "(premium)")
-		else
-			title
-		end
-	end
+     else title = raw("#{h(job.title)}") 
+     end 
+
+    if job.premium
+      title + content_tag(:strong, " (premium)")
+    else
+      title
+    end
+  end
+end
 end
